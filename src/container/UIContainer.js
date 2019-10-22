@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import { Badge, Snackbar, Slide } from "@material-ui/core";
+import { Badge, Snackbar, Fade, Slide, Grow } from "@material-ui/core";
 
 // icons
 import {
@@ -100,7 +100,12 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3)
+    padding: theme.spacing(3),
+    height: "100vh",
+    overflow: "scroll"
+  },
+  snackbar: {
+    textAlign: 'center'
   }
 }));
 
@@ -108,6 +113,7 @@ export function UIContainer(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const { state, setStateTimeout } = useContext(TempContext);
 
   function handleDrawerOpen() {
     setOpen(true);
@@ -116,7 +122,6 @@ export function UIContainer(props) {
   function handleDrawerClose() {
     setOpen(false);
   }
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -150,6 +155,7 @@ export function UIContainer(props) {
         </div>
         <Divider />
         <List>
+          <SideBarButton title="Home" path="/" />
           <SideBarButton title="Repository" path="/zzal" />
           <SideBarButton title="Free board" path="/board" />
           <SideBarButton title="F&Q" path="/fnq" />
@@ -166,7 +172,17 @@ export function UIContainer(props) {
           ))}
         </List>
       </Drawer>
+      {/* Content area */}
       <PageContainer />
+      {/* snackbar */}
+      <Snackbar
+        open={state.open}
+        TransitionComponent={state.Transition}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        message={<span id="message-id" className={classes.snackbar}>{state.content}</span>}
+      />
     </div>
   );
 }
@@ -174,13 +190,9 @@ export function UIContainer(props) {
 function HeaderAppbar(props) {
   const classes = useStyles();
   const headTitle = "Temp project name";
-  const { signin } = useContext(TempContext);
+  const { signin, onChangeSign } = useContext(TempContext);
 
   const history = useHistory();
-
-  function signAction(bool) {
-    history.push(bool ? "/signin" : "/");
-  }
   return (
     <AppBar
       position="fixed"
@@ -200,11 +212,16 @@ function HeaderAppbar(props) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap className={classes.title} onClick={() => history.push('/')}>
+        <Typography
+          variant="h6"
+          noWrap
+          className={classes.title}
+          onClick={() => history.push("/")}
+        >
           {headTitle}
         </Typography>
         {!signin ? (
-          <Button color="inherit" onClick={() => signAction(true)}>
+          <Button color="inherit" onClick={() => history.push("/signin")}>
             Login
           </Button>
         ) : (
@@ -224,7 +241,7 @@ function HeaderAppbar(props) {
               aria-label="account of current user"
               // aria-controls={menuId}
               aria-haspopup="true"
-              onClick={() => signAction(false)}
+              onClick={() => onChangeSign(false)}
               color="inherit"
             >
               <AccountCircle />
