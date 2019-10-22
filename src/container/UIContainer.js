@@ -1,31 +1,44 @@
-import React from "react";
+import React, { useContext } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
+import { Badge, Snackbar, Slide } from "@material-ui/core";
+
+// icons
+import {
+  AccountCircle,
+  Menu as MenuIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  MoveToInbox as InboxIcon,
+  Mail as MailIcon,
+  Notifications as NotificationsIcon
+} from "@material-ui/icons";
 
 // root router
 import RootRouter from "../routes";
+import { useHistory } from "react-router";
+
+// store
+import { TempContext } from "../contexts";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex"
+    display: "flex",
+    flexGrow: 1
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -42,8 +55,15 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen
     })
   },
+  title: {
+    flexGrow: 1,
+    cursor: "pointer"
+  },
+  // menuButton: {
+  //   marginRight: 36
+  // },
   menuButton: {
-    marginRight: 36
+    marginRight: theme.spacing(2)
   },
   hide: {
     display: "none"
@@ -84,10 +104,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function UIContainer({ children }) {
+export function UIContainer(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   function handleDrawerOpen() {
     setOpen(true);
@@ -100,29 +120,11 @@ export function UIContainer({ children }) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="Open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open
-            })}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            Temp project name
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <HeaderAppbar
+        handleDrawerOpen={handleDrawerOpen}
+        open={open}
+        {...props}
+      />
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -148,21 +150,13 @@ export function UIContainer({ children }) {
         </div>
         <Divider />
         <List>
-          {/* {["홈", "로그인", "회원가입"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))} */}
-          <SideBarButton title="Home" path="/"/>
-          <SideBarButton title="Sign in" path="/signin"/>
-          <SideBarButton title="Sign up" path="/signup"/>
+          <SideBarButton title="Repository" path="/zzal" />
+          <SideBarButton title="Free board" path="/board" />
+          <SideBarButton title="F&Q" path="/fnq" />
         </List>
         <Divider />
         <List>
-          {["저장소", "자유게시판", "F&Q"].map((text, index) => (
+          {["Temp01", "Temp02", "Temp03"].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -177,10 +171,84 @@ export function UIContainer({ children }) {
   );
 }
 
-function SideBarButton({title, path}) {
-  const { Link } = require("react-router-dom");
+function HeaderAppbar(props) {
+  const classes = useStyles();
+  const headTitle = "Temp project name";
+  const { signin } = useContext(TempContext);
+
+  const history = useHistory();
+
+  function signAction(bool) {
+    history.push(bool ? "/signin" : "/");
+  }
   return (
-    <ListItem button component={(props) => <Link to={path} {...props}/>}>
+    <AppBar
+      position="fixed"
+      className={clsx(classes.appBar, {
+        [classes.appBarShift]: props.open
+      })}
+    >
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          aria-label="Open drawer"
+          onClick={props.handleDrawerOpen}
+          edge="start"
+          className={clsx(classes.menuButton, {
+            [classes.hide]: props.open
+          })}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap className={classes.title} onClick={() => history.push('/')}>
+          {headTitle}
+        </Typography>
+        {!signin ? (
+          <Button color="inherit" onClick={() => signAction(true)}>
+            Login
+          </Button>
+        ) : (
+          <>
+            <IconButton aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <MailIcon />
+              </Badge>
+            </IconButton>
+            <IconButton aria-label="show 11 new notifications" color="inherit">
+              <Badge badgeContent={11} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <IconButton
+              edge="end"
+              aria-label="account of current user"
+              // aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={() => signAction(false)}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+          </>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}
+
+function SideBarButton({ title, path }) {
+  const { Link } = require("react-router-dom");
+  const renderLink = React.useMemo(
+    () =>
+      React.forwardRef((linkProps, ref) => (
+        // With react-router-dom@^6.0.0 use `ref` instead of `innerRef`
+        // See https://github.com/ReactTraining/react-router/issues/6056
+        <Link to={path} {...linkProps} innerRef={ref} />
+      )),
+    [path]
+  );
+  return (
+    <ListItem button component={renderLink}>
       <ListItemIcon>
         <InboxIcon />
       </ListItemIcon>

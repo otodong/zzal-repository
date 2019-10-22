@@ -3,15 +3,18 @@ import "./App.css";
 import { UIContainer } from "./container";
 
 // Store
+import { TempProvider } from "./contexts";
 
 // Router
 import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
-    <BrowserRouter>
-      <UIContainer />
-    </BrowserRouter>
+    <TempProvider>
+      <BrowserRouter>
+        <UIContainer />
+      </BrowserRouter>
+    </TempProvider>
   );
 }
 
