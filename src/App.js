@@ -1,17 +1,17 @@
 import React from "react";
 import "./App.css";
-import { UIContainer } from "./components";
+import { UIContainer } from "./container";
+
+// Store
+
+// Router
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //   </header>
-    // </div>
-    <UIContainer />
+    <BrowserRouter>
+      <UIContainer />
+    </BrowserRouter>
   );
 }
 

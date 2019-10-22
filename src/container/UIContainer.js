@@ -18,7 +18,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-import { MainContent } from ".";
+// root router
+import RootRouter from "../routes";
 
 const drawerWidth = 240;
 
@@ -83,7 +84,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function UIContainer() {
+export function UIContainer({ children }) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -147,14 +148,17 @@ export function UIContainer() {
         </div>
         <Divider />
         <List>
-          {["홈", "로그인", "회원가입"].map((text, index) => (
+          {/* {["홈", "로그인", "회원가입"].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
-          ))}
+          ))} */}
+          <SideBarButton title="Home" path="/"/>
+          <SideBarButton title="Sign in" path="/signin"/>
+          <SideBarButton title="Sign up" path="/signup"/>
         </List>
         <Divider />
         <List>
@@ -168,19 +172,29 @@ export function UIContainer() {
           ))}
         </List>
       </Drawer>
-      <MainContainer>
-        <MainContent />
-      </MainContainer>
+      <PageContainer />
     </div>
   );
 }
 
-function MainContainer({ children }) {
+function SideBarButton({title, path}) {
+  const { Link } = require("react-router-dom");
+  return (
+    <ListItem button component={(props) => <Link to={path} {...props}/>}>
+      <ListItemIcon>
+        <InboxIcon />
+      </ListItemIcon>
+      <ListItemText primary={title} />
+    </ListItem>
+  );
+}
+
+function PageContainer() {
   const classes = useStyles();
   return (
     <main className={classes.content}>
       <div className={classes.toolbar} />
-      {children}
+      <RootRouter />
     </main>
   );
 }
