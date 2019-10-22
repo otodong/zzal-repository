@@ -10,11 +10,11 @@ import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
-    <TempProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <TempProvider>
         <UIContainer />
-      </BrowserRouter>
-    </TempProvider>
+      </TempProvider>
+    </BrowserRouter>
   );
 }
 
